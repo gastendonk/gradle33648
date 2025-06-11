@@ -1,8 +1,8 @@
-# Demo projects for Gradle issue 33648
+# Demo projects for Gradle issue [33648](https://github.com/gradle/gradle/issues/33648)
 
 ## Please do not make projects without a folder an error!
 
-**See also Gradle issue 25531**
+**See also Gradle issue [25531](https://github.com/gradle/gradle/issues/25531)**
 
 We have a use case for projects without folders. We have so-called pseudo-app projects. These projects don't correspond to any existing
 directory and are created in RAM by the build process.We create custom apps from a selection of real projects. Pseudo-app project represent
