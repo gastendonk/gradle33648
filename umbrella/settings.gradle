@@ -1,0 +1,24 @@
+// simplified inclusion of all projects:
+includeFlat 'app1'
+includeFlat 'app2'
+includeFlat 'base'
+
+if (getProperty('bau') == '1') {
+	// simplified configuration of applications:
+	gradle.ext.customers = ['david', 'goliath']
+	gradle.ext.environments = ['production', 'test']
+	gradle.ext.applications = ['app1', 'app2'];
+	
+	gradle.ext.customers.each { c ->
+		gradle.ext.environments.each { env ->
+			gradle.ext.applications.each { app ->
+				def fullName = "${c}_${env}_${app}"
+				def appPath =  "${c}/${env}/${app}"
+				includeFlat fullName
+				def folder = new File("$settingsDir/build/$appPath")
+				folder.mkdirs()  // needed since Gradle ~8.10 (We don't need these empty folders!)
+				project(":${fullName}").projectDir = folder
+			}
+		}
+	}
+}

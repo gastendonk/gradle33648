@@ -1,0 +1,70 @@
+allprojects {
+    apply plugin: 'java-library'
+    apply plugin: 'eclipse'
+    
+    repositories {
+    	mavenCentral()
+    }
+    
+    configurations {
+        mainRuntimeElements {
+            extendsFrom runtimeElements
+            canBeConsumed = true
+            canBeResolved = false
+        }
+        testRuntimeElements {
+            extendsFrom testImplementation 
+            canBeConsumed = true
+            canBeResolved = false
+        }
+        testRuntimeOnlyElements {
+            extendsFrom testRuntimeOnly 
+            canBeConsumed = true
+            canBeResolved = false
+        }
+    }
+
+    ext.xproject = { projectName ->
+        dependencies {
+            api                project(path: ":$projectName", configuration: 'mainRuntimeElements')
+            testImplementation project(path: ":$projectName", configuration: 'testRuntimeElements')
+            testRuntimeOnly    project(path: ":$projectName", configuration: 'testRuntimeOnlyElements')
+        }
+    }
+}
+
+if (getProperty('bau') == '1') {
+	gradle.ext.customers.each { c ->
+		gradle.ext.environments.each { env ->
+			gradle.ext.applications.each { app ->
+				def fullName = "${c}_${env}_${app}"
+				def P = rootProject.project(fullName)
+				P.dependencies {
+					P.xproject app
+				}
+				P.tasks.register('buildAppAsDir', Sync) {
+					// simplified: start script omitted
+					into('lib') {
+						from P.configurations.runtimeClasspath
+					}
+					into('config') {
+						from rootProject.file("resources-customer/${c}/${env}")
+						include "${app}*"
+					}
+					destinationDir = P.file('dir')
+				}
+				P.tasks.jar.enabled = false
+			}
+			tasks.register("${c}_${env}") {
+				gradle.ext.applications.each { app ->
+					dependsOn "${c}_${env}_${app}:buildAppAsDir"
+				}
+			}
+		}
+		tasks.register(c) {
+			gradle.ext.environments.each { env ->
+				dependsOn "${c}_${env}"
+			}
+		}
+	}
+}
