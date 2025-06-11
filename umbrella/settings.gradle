@@ -16,7 +16,7 @@ if (getProperty('bau') == '1') {
 				def appPath =  "${c}/${env}/${app}"
 				includeFlat fullName
 				def folder = new File("$settingsDir/build/$appPath")
-				folder.mkdirs()  // needed since Gradle ~8.10 (We don't need these empty folders!)
+//				folder.mkdirs()  // needed since Gradle ~8.10 (We don't need these empty folders!)
 				project(":${fullName}").projectDir = folder
 			}
 		}
