@@ -26,6 +26,11 @@ We initially wanted to move to Gradle 8.14, but have now moved to 8.10 as an int
 2. `cd umbrella`
 3. `build.bat`
 
+Main content of build.bat is `gradlew -Pbau=1 clean david goliath`.
+In real world scenarios we would call something like `gradlew -Pbau=1 clean david_test_app1` and expect that there is no umbrella/build/goliath folder and no umbrella/build/david/production folder.
+
+*What is the Gradle command-line option `-Pbau=1` for? It allows us to distinguish between build and IDE mode (bau=0). Certain Gradle actions should not be executed in Eclipse (in all Gradle phases). We haven't found an elegant solution for this.*
+
 ## actual behaviour
 several warnings
 ```
@@ -52,4 +57,4 @@ irectory
 ```
 
 ## wanted behaviour
-no messages
+no messages (no error in Gradle 9)
